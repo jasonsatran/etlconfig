@@ -1,5 +1,12 @@
 #etlconfig
 
-Spark ETL Config framework
+Configuration based spark ETL with json.
 
-Python ETL config with a series of linked SQL queries
+## Supported file types
+
+- Initially csv only on the local file system.
+- Future:  parquet on S3
+
+## Data Sources
+
+- https://catalog.data.gov/dataset?res_format=CSV

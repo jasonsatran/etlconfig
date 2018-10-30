@@ -1,1 +1,2 @@
-jsonpickle-1.0
+jsonpickle==1.0
+pyspark==2.3.2

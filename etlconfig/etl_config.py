@@ -1,5 +1,7 @@
 import json
 import jsonpickle
+from pyspark import SparkContext
+from etlconfig.app_spark_session import spark_session
 
 
 class EtlConfig:
@@ -16,6 +18,13 @@ class EtlConfig:
     def decode(s):
         return jsonpickle.decode(s)
 
+    def run(self):
+        for t in self._source_tables:
+            # load_table resturns the df, but it is not necessary to return it here.  it is only necessary to register.
+            t.load_table()
+        df = spark_session.sql(self._sql)
+        return df
+
 
 class TableObject():
 
@@ -29,3 +38,9 @@ class TableObject():
 
     def encode(self):
         return jsonpickle.encode(self)
+
+    def load_table(self):
+        df = spark_session.read.option(
+            "header", "true").csv(self._path_to_file)
+        df.createOrReplaceTempView(self._alias_name)
+        return df
