@@ -1,0 +1,14 @@
+{
+    "_source_tables": [
+        {
+            "_alias_name": "alias",
+            "_path_to_file": "/path/to/file"
+        },
+        {
+            "_alias_name": "alias2",
+            "_path_to_file": "/path/to/file2"
+        }
+    ],
+    "_destination": "/path/to/output",
+    "_sql": "select * from out1"
+}
