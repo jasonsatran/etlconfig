@@ -1,22 +1,17 @@
 {
     "py/object": "etlconfig.etl_config.EtlConfig",
-    "_destination": "/tmp/output.csv",
+    "_destination": "/tmp/etlconfig/output/",
     "_source_tables": [
         {
             "py/object": "etlconfig.etl_config.TableObject",
-            "_alias_name": "census",
-            "_path_to_file": "/tmp/2010_Census_Populations_by_Zip_Code.csv"
+            "_alias_name": "city",
+            "_path_to_file": "/tmp/etlconfig/city_table.csv"
         },
         {
             "py/object": "etlconfig.etl_config.TableObject",
-            "_alias_name": "more_data",
-            "_path_to_file": "/tmp/more_data.csv"
-        },
-        {
-            "py/object": "etlconfig.etl_config.TableObject",
-            "_alias_name": "special_zip",
-            "_path_to_file": "/tmp/selected_zip_code.csv"
+            "_alias_name": "state",
+            "_path_to_file": "/tmp/etlconfig/state_table.csv"
         }
     ],
-    "_sql": "select m.more_data,c.`Total Households` from census c inner join more_data m on m.zip = c.zip inner join special_zip s on s.zip = c.zip"
+    "_sql": "select city.city,city.population,state.census_division from state inner join city on state.abbreviation = city.state order by state.name asc, city.city asc"
 }

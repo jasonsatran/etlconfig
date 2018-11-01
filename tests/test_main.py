@@ -59,11 +59,11 @@ class TestEtlConfig(unittest.TestCase):
         self.assertEqual(o._source_tables[1]._path_to_file, "/other/y/")
         self.assertEqual(o._sql, "select 1")
 
-    def test_it_runs_sql(self):
+    def get_test_etl_config(self):
         t1 = TableObject("census", census_file_path)
         t2 = TableObject("more_data", more_data_path)
         t3 = TableObject("special_zip", selected_zip_path)
-        destination_path = "/tmp/output.csv"
+        destination_path = "/tmp/output/"
         sql = """
         select m.more_data,c.`Total Households`
         from census c
@@ -72,6 +72,22 @@ class TestEtlConfig(unittest.TestCase):
         """
         etl = EtlConfig(
             [t1, t2, t3], destination_path, sql)
+
+        return etl
+
+    def test_it_runs_sql(self):
+        etl = self.get_test_etl_config()
         result = etl.run()
         result.show()
         self.assertEqual(result.count(), 3)
+
+    def test_run_and_save(self):
+
+        etl = self.get_test_etl_config()
+        output_path = etl._destination
+        # todo:  if path exists delete it
+        # if os.path.exists(output_path):
+        #     os.remove(output_path)
+        etl.runAndSave()
+        exits = os.path.exists(output_path)
+        self.assertEqual(True, exits)

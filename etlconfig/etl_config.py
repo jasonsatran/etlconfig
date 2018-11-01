@@ -25,6 +25,11 @@ class EtlConfig:
         df = spark_session.sql(self._sql)
         return df
 
+    def runAndSave(self):
+        df = self.run()
+        df.repartition(1).write.mode("overwrite").csv(self._destination)
+        return df
+
 
 class TableObject():
 

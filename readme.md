@@ -8,6 +8,10 @@ Define your simple Data loads with JSON. Spark process the data based on configu
 - a SQL command
 - a destination command
 
+## set up
+
+- etlconfig must be added to PYTHONPATH
+- load python package dependencies in requirements.txt
 
 ## Demo
 
@@ -16,7 +20,7 @@ Define your simple Data loads with JSON. Spark process the data based on configu
 - these files are to support the demo
 
 ```bash
-cp ./tests/resources/*.csv ./tests/resources/config_example.json /tmp/
+cp -r ./tests/resources/ /tmp/etlconfig/
 ```
 
 ### Run the ./demo.py python file
@@ -28,26 +32,21 @@ Doing this will load the following configuration file from disk:
 ```json
 {
     "py/object": "etlconfig.etl_config.EtlConfig",
-    "_destination": "/tmp/output.csv",
+    "_destination": "/tmp/etlconfig/output/",
     "_source_tables": [
         {
             "py/object": "etlconfig.etl_config.TableObject",
-            "_alias_name": "census",
-            "_path_to_file": "/tmp/2010_Census_Populations_by_Zip_Code.csv"
+            "_alias_name": "city",
+            "_path_to_file": "/tmp/etlconfig/city_table.csv"
         },
         {
             "py/object": "etlconfig.etl_config.TableObject",
-            "_alias_name": "more_data",
-            "_path_to_file": "/tmp/more_data.csv"
-        },
-        {
-            "py/object": "etlconfig.etl_config.TableObject",
-            "_alias_name": "special_zip",
-            "_path_to_file": "/tmp/selected_zip_code.csv"
+            "_alias_name": "state",
+            "_path_to_file": "/tmp/etlconfig/state_table.csv"
         }
     ],
-    "_sql": "select m.more_data,c.`Total Households` from census c inner join more_data m on m.zip = c.zip inner join special_zip s on s.zip = c.zip"
-}
+    "_sql": "select city.city,city.population,state.census_division from state inner join city on state.abbreviation = city.state order by state.name asc, city.city asc"
+}%
 ```
 
 ### terminal results
@@ -55,32 +54,41 @@ Doing this will load the following configuration file from disk:
 - The terminal will then show the results of loading 3 files and running the SQL
 
 ```bash
-$ python demo.py
-
-2018-10-30 21:20:26 WARN  NativeCodeLoader:62 - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2018-11-01 08:44:49 WARN  NativeCodeLoader:62 - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 Setting default log level to "WARN".
 To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-+---------+----------------+
-|more_data|Total Households|
-+---------+----------------+
-|        a|           10727|
-|        b|           18646|
-|        c|           19892|
-+---------+----------------+
++----------+----------+---------------+
+|      city|population|census_division|
++----------+----------+---------------+
+|   Chicago|   2716000|              3|
+|  Fort Lee|     37907|              2|
+|    Newark|    285154|              2|
+|Huntington|    203276|              2|
+| Manhattan|   1665000|              2|
++----------+----------+---------------+
 ```
 
-## set up
+### output written to disk
 
-- etlconfig must be added to PYTHONPATH
-- load python package dependencies in requirements.txt
+Additionally, the output is saved to disk at the configured location, which  is /tmp/etlconfig/output/
+
+````
+$ cat /tmp/etlconfig/output/*.csv
+Chicago,2716000,3
+Fort Lee,37907,2
+Newark,285154,2
+Huntington,203276,2
+Manhattan,1665000,2
+````
+
 
 ## Data Sources
 
 - https://catalog.data.gov/dataset?res_format=CSV
+- https://statetable.com/
+- google for city populations
 
 ## To Do 
 
-- better example CSV files
-- saving the result back to disk
 - sourcing file systems from cloud data stores
 - support reading file formats besides csv
